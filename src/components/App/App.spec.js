@@ -19,6 +19,23 @@ const getWinCount = sign => wrapper.find(`[data-hook="player-${sign}-wins"]`).te
 const startNewGame = () => wrapper.find('[data-hook="start-new-game"]')
   .simulate('click');
 
+const makeXWin = () => {
+  clickACellAt(0); // X
+  clickACellAt(3); // O
+  clickACellAt(1); // X
+  clickACellAt(4); // O
+  clickACellAt(2); // X
+}
+
+const makeOWin = () => {
+  clickACellAt(0); // X
+  clickACellAt(3); // O
+  clickACellAt(1); // X
+  clickACellAt(4); // O
+  clickACellAt(7); // X
+  clickACellAt(5); // O
+}
+
 const getWinnerMessage = () => wrapper.find('[data-hook="winner-message"]').text();
 
 describe('App', () => {
@@ -34,12 +51,7 @@ describe('App', () => {
 
   it('player "O" should win the game', () => {
     wrapper = render(<App/>);
-    clickACellAt(4);
-    clickACellAt(0);
-    clickACellAt(5);
-    clickACellAt(1);
-    clickACellAt(7);
-    clickACellAt(2);
+    makeOWin();
     expect(getWinnerMessage()).to.equal('O Wins!');
   });
 });
@@ -71,21 +83,13 @@ it('should detect a tie', () => {
 
 
 
-it('should count wins', () => {
+it('should count X player wins', () => {
   wrapper = render(<App/>);
-  clickACellAt(0); // X
-  clickACellAt(3); // O
-  clickACellAt(1); // X
-  clickACellAt(4); // O
-  clickACellAt(2); // X
+  makeXWin();
   expect(getWinCount('X')).to.equal('1');
   expect(getWinCount('O')).to.equal('0');
   startNewGame();
-  clickACellAt(0); // X
-  clickACellAt(3); // O
-  clickACellAt(1); // X
-  clickACellAt(4); // O
-  clickACellAt(2); // X
+  makeXWin();
   expect(getWinCount('X')).to.equal('2');
   expect(getWinCount('O')).to.equal('0');
 });
@@ -94,21 +98,11 @@ it('should count wins', () => {
 
 it('should count O player wins', () => {
   wrapper = render(<App/>);
-  clickACellAt(0); // X
-  clickACellAt(3); // O
-  clickACellAt(1); // X
-  clickACellAt(4); // O
-  clickACellAt(7); // X
-  clickACellAt(5); // O
+  makeOWin();
   expect(getWinCount('X')).to.equal('0');
   expect(getWinCount('O')).to.equal('1');
   startNewGame();
-  clickACellAt(0); // X
-  clickACellAt(3); // O
-  clickACellAt(1); // X
-  clickACellAt(4); // O
-  clickACellAt(7); // X
-  clickACellAt(5); // O
+  makeOWin();
   expect(getWinCount('X')).to.equal('0');
   expect(getWinCount('O')).to.equal('2');
 });
