@@ -17,6 +17,8 @@ const getWinnerMessage = () =>
   page.$eval('[data-hook="winner-message"]', elem => elem.innerText);
 const isWinnerMessageVisible = async () =>
   (await page.$('[data-hook="winner-message"]')) !== null;
+const isPlayerHiglighed = (sign) =>
+  page.$eval(`[data-hook="player-${sign}"]`, elem => elem.className === 'active');
 const save = async () => (await page.$('[data-hook="save"]')).click();
 const load = async () => (await page.$('[data-hook="load"]')).click();
 
@@ -59,4 +61,25 @@ describe('React application', () => {
     return eventually(async () =>
       expect(await getCellTextAt(0)).to.equal('X'));
   });
+
+  it('should show that X should make the first move', async () => {
+    await navigate();
+    expect(await isPlayerHiglighed('X')).to.equal(true);
+    expect(await isPlayerHiglighed('O')).to.equal(false);
+    // expect(await getNextPlayer()).to.equal('X');
+  });
+
+  it('should show that O should make the second move', async () => {
+    await navigate();
+    await clickACellAt(0);
+    expect(await isPlayerHiglighed('X')).to.equal(false);
+    expect(await isPlayerHiglighed('O')).to.equal(true);
+    // expect(await getNextPlayer()).to.equal('O');
+  });
+
+  // it('should have active classname on player X', async () => {
+  //   await navigate();
+  //   expect(await isPlayerHiglighed('X')).to.equal(true);
+  // });
+
 });
