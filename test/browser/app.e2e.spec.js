@@ -13,8 +13,10 @@ const clickACellAt = async index => {
 };
 const getCellTextAt = index =>
   page.$$eval('[data-hook="cell"]', (cells, index) => cells[index].innerHTML, index);
-const getWinnerMessage = () =>
+  const getWinnerMessage = () =>
   page.$eval('[data-hook="winner-message"]', elem => elem.innerText);
+const getWinCount = (sign) =>
+  page.$eval(`[data-hook="player-${sign}-wins"]`, elem => elem.innerText);
 const isWinnerMessageVisible = async () =>
   (await page.$('[data-hook="winner-message"]')) !== null;
 const isPlayerHiglighed = (sign) =>
@@ -60,6 +62,18 @@ describe('React application', () => {
 
     return eventually(async () =>
       expect(await getCellTextAt(0)).to.equal('X'));
+  });
+
+  it('should show win count after refreshing', async () => {
+    await navigate();
+    await clickACellAt(0); // X
+    await clickACellAt(3); // O
+    await clickACellAt(1); // X
+    await clickACellAt(4); // O
+    await clickACellAt(2); // X
+    expect(await getWinnerMessage()).to.equal('X Wins!');
+    await page.reload();
+    expect(await getWinCount('X')).to.equal('1');
   });
 
   it('should show that X should make the first move', async () => {

@@ -3,13 +3,15 @@ import {testBaseUrl} from '../test-common';
 import {beforeAndAfter} from '../environment';
 import fetch from 'node-fetch';
 
-describe('When rendering', () => {
+describe('Saving and loading', () => {
 
   beforeAndAfter();
 
   it('should load a saved game', async () => {
     const aGame = {
-      board: [['X', 'O', 'X'], ['', '', ''], ['', '', '']]
+      board: [['X', 'O', 'X'], ['', '', ''], ['', '', '']],
+      xWins: 0,
+      oWins: 0,
     };
     await fetch(`${testBaseUrl}/api/game`, {
       method: 'post',

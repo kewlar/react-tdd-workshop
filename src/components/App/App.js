@@ -65,6 +65,10 @@ class App extends React.Component {
     });
 
   }
+  componentDidMount(){
+    this.load();
+  }
+
   save() {
     fetch('/api/game', {
       method: 'POST',
@@ -73,10 +77,22 @@ class App extends React.Component {
     });
   }
 
+  saveWin(sign) {
+    fetch('/api/game/win', {
+      method: 'POST',
+      body: JSON.stringify({winner: sign}),
+      headers: {'Content-Type': 'application/json'}
+    });
+  }
+
   async load() {
     const response = await fetch('/api/game');
-    const {board} = await response.json();
-    this.setState({board});
+    const {board, xWins, oWins} = await response.json();
+    this.setState({
+      board,
+      xWins,
+      oWins
+    });
   }
 
   gameStatus() {
@@ -99,6 +115,7 @@ class App extends React.Component {
         xWins: this.state.xWins + (winner === 'X' ? 1 : 0),
         oWins: this.state.oWins + (winner === 'O' ? 1 : 0),
      });
+     this.saveWin(winner);
     }
     const newNextPlayer = nextPlayer === 'X' ? 'O' : 'X';
     this.setState({board, nextPlayer: newNextPlayer});
