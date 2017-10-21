@@ -51,10 +51,20 @@ class App extends React.Component {
     this.state = {
       board: [['', '', ''], ['', '', ''], ['', '', '']],
       winner: '',
-      nextPlayer: 'X'
+      nextPlayer: 'X',
+      xWins: 0,
+      oWins: 0,
+      // x
     };
   }
+  resetBoardState(){
+    this.setState({
+      board: [['', '', ''], ['', '', ''], ['', '', '']],
+      winner: '',
+      nextPlayer: 'X',
+    });
 
+  }
   save() {
     fetch('/api/game', {
       method: 'POST',
@@ -83,7 +93,12 @@ class App extends React.Component {
     board[rowI][cellI] = nextPlayer;
 
     if (getGameStatus(board) === WON) {
-      this.setState({winner: nextPlayer});
+      const winner = nextPlayer;
+      this.setState({
+        winner,
+        xWins: this.state.xWins + (winner === 'X' ? 1 : 0),
+        oWins: this.state.oWins + (winner === 'O' ? 1 : 0),
+     });
     }
     const newNextPlayer = nextPlayer === 'X' ? 'O' : 'X';
     this.setState({board, nextPlayer: newNextPlayer});
@@ -96,14 +111,26 @@ class App extends React.Component {
       <div data-hook="app" className="root">
         <span data-hook="player-X" className={this.state.nextPlayer === 'X' ? 'active':''}>X</span>
         <span data-hook="player-O" className={this.state.nextPlayer === 'O' ? 'active':''}>O</span>
+
+        <div>
+          <span data-hook="player-X-wins">{this.state.xWins}</span>
+          <span data-hook="player-O-wins">{this.state.oWins}</span>
+        </div>
+
         <Board
           board={this.state.board}
           onGameChanged={(rowIndex, cellIndex) => this.handleGameChange(rowIndex, cellIndex)}
           />
         {this.gameStatus() &&
-          <div data-hook="winner-message" className="winner-message">
-            {itIsATie ? "It's a tie!": `${this.state.winner} Wins!`}
-          </div>}
+          <div>
+            <div data-hook="winner-message" className="winner-message">
+              {itIsATie ? "It's a tie!": `${this.state.winner} Wins!`}
+            </div>
+            <div>
+              <button data-hook="start-new-game" onClick={() => (this.resetBoardState())}>Start a new game</button>
+            </div>
+          </div>
+        }
         <div>
           <button onClick={() => this.save()} data-hook="save">Save</button>
           <button onClick={() => this.load()} data-hook="load">Load</button>

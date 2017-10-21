@@ -7,10 +7,18 @@ let wrapper;
 const render = element => mount(
   element, {attachTo: document.createElement('div')}
 );
+
 const clickACellAt = index => wrapper.find('[data-hook="cell"]')
   .at(index).simulate('click');
+
 const getCellTextAt = index => wrapper.find('[data-hook="cell"]')
   .at(index).text();
+
+const getWinCount = sign => wrapper.find(`[data-hook="player-${sign}-wins"]`).text();
+
+const startNewGame = () => wrapper.find('[data-hook="start-new-game"]')
+  .simulate('click');
+
 const getWinnerMessage = () => wrapper.find('[data-hook="winner-message"]').text();
 
 describe('App', () => {
@@ -60,6 +68,52 @@ it('should detect a tie', () => {
   clickACellAt(5); // X
   expect(getWinnerMessage()).to.equal("It's a tie!");
 });
+
+
+
+it('should count wins', () => {
+  wrapper = render(<App/>);
+  clickACellAt(0); // X
+  clickACellAt(3); // O
+  clickACellAt(1); // X
+  clickACellAt(4); // O
+  clickACellAt(2); // X
+  expect(getWinCount('X')).to.equal('1');
+  expect(getWinCount('O')).to.equal('0');
+  startNewGame();
+  clickACellAt(0); // X
+  clickACellAt(3); // O
+  clickACellAt(1); // X
+  clickACellAt(4); // O
+  clickACellAt(2); // X
+  expect(getWinCount('X')).to.equal('2');
+  expect(getWinCount('O')).to.equal('0');
+});
+
+
+
+it('should count O player wins', () => {
+  wrapper = render(<App/>);
+  clickACellAt(0); // X
+  clickACellAt(3); // O
+  clickACellAt(1); // X
+  clickACellAt(4); // O
+  clickACellAt(7); // X
+  clickACellAt(5); // O
+  expect(getWinCount('X')).to.equal('0');
+  expect(getWinCount('O')).to.equal('1');
+  startNewGame();
+  clickACellAt(0); // X
+  clickACellAt(3); // O
+  clickACellAt(1); // X
+  clickACellAt(4); // O
+  clickACellAt(7); // X
+  clickACellAt(5); // O
+  expect(getWinCount('X')).to.equal('0');
+  expect(getWinCount('O')).to.equal('2');
+});
+
+
 
 describe('getGameStatus', () => {
   it('X should win the game', () => {
